@@ -1,0 +1,41 @@
+# ---------------------------------
+# Post-RTL (Gate-level) Cocotb
+# ---------------------------------
+
+SIM ?= icarus
+TOPLEVEL_LANG ?= verilog
+
+TOPLEVEL = soc_top
+MODULE   = test_soc_smoke_extended
+
+# ----------------------------
+# Gate-level netlist
+# ----------------------------
+VERILOG_SOURCES = \
+  $(PWD)/../post_rtl/pdk/sky130_fd_sc_hd.v \
+  $(PWD)/../post_rtl/sky130_sram_blackbox.v \
+  $(PWD)/../post_rtl/soc_top.synth.v
+
+
+# ----------------------------
+# Icarus-safe compile options
+# ----------------------------
+COMPILE_ARGS += \
+  -DPOST_RTL \
+  -DGL_SIM \
+  -DSIMULATION \
+  -gno-specify \
+  -g2012
+
+# ----------------------------
+# Runtime options
+# ----------------------------
+PLUSARGS += +GL_SIM
+
+# ----------------------------
+# Results file
+# ----------------------------
+export COCOTB_RESULTS_FILE = results_post_rtl.xml
+
+include $(shell cocotb-config --makefiles)/Makefile.sim
+

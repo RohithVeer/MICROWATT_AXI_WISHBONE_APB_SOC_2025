@@ -12,11 +12,6 @@ module soc_top (
 );
 
     // -------------------------------------------------------
-    // Write mask (full write)
-    // -------------------------------------------------------
-    wire [3:0] wmask0 = 4'b1111;
-
-    // -------------------------------------------------------
     // SRAM outputs
     // -------------------------------------------------------
     wire [31:0] dout0;
@@ -25,18 +20,22 @@ module soc_top (
     assign prdata = dout0;
 
     // -------------------------------------------------------
-    // SRAM MACRO
-    // POWER PINS ARE **NOT CONNECTED IN RTL**
+    // SRAM MACRO (RTL simulation safe tie-offs)
     // -------------------------------------------------------
     sky130_sram_1kbyte_1rw1r_32x256_8 u_sram (
         .clk0   (clk),
-        .clk1   (clk),
-        .wmask0 (wmask0),
+        .csb0   (1'b1),        // disabled
+        .web0   (1'b1),        // read-only
+        .wmask0 (8'hFF),       // full write mask
+        .addr0  (8'b0),
+        .din0   (32'b0),
         .dout0  (dout0),
+
+        .clk1   (clk),
+        .csb1   (1'b1),        // disabled
+        .addr1  (8'b0),
         .dout1  (dout1)
     );
-
-    wire _unused = |dout1;
 
 endmodule
 

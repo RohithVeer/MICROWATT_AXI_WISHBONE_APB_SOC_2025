@@ -1,24 +1,26 @@
-# Python / cocotb
+# Simulation artifacts
+verif/sim_build/
+verif/*.xml
+verif/*.log
+*.vvp
+*.vcd
+*.fst
+
+# Python
 __pycache__/
 *.pyc
 .venv/
 
-# Simulation
-sim_build/
-*.vvp
-*.fst
-*.vcd
-
-# Logs
-logs/
-test_logs/
-*.log
-results.xml
-
-# OpenLane
-openlane/
+# OpenLane / PNR outputs
 runs/
-pdks/
+tmp/
+reports/
+logs/
 
-# OS junk
+# Editors
+.vscode/
+.idea/
+
+# OS
 .DS_Store
+

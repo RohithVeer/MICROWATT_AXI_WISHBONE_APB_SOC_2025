@@ -17,6 +17,7 @@ export PYTHONPATH := $(VERIF_DIR)/tb:$(PYTHONPATH)
 
 ifeq ($(TOPLEVEL),soc_top)
   VERILOG_SOURCES := \
+    $(VERIF_DIR)/sram_blackbox.v \
     $(ROOT_DIR)/rtl/axi/axi_lite_to_wishbone.sv \
     $(ROOT_DIR)/rtl/wishbone/wb_to_apb.sv \
     $(ROOT_DIR)/rtl/wishbone/wishbone_interconnect.sv \
@@ -42,4 +43,14 @@ include $(shell cocotb-config --makefiles)/Makefile.sim
 list:
 	@echo "Available test python files (verif/tb):"
 	@ls -1 $(VERIF_DIR)/tb/test_*.py 2>/dev/null || true
+# ----------------------------
+# Post-RTL (Gate-level) sim
+# ----------------------------
+.PHONY: post_rtl clean_post_rtl
+
+post_rtl:
+	$(MAKE) -f Makefile.post_rtl sim
+
+clean_post_rtl:
+	$(MAKE) -f Makefile.post_rtl clean
 
