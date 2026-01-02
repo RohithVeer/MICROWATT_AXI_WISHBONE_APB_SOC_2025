@@ -1,24 +1,24 @@
-# Python / Cocotb
+# Python / cocotb
 __pycache__/
 *.pyc
 .venv/
 
-# Simulation artifacts
+# Simulation
 sim_build/
-*.vcd
+*.vvp
 *.fst
-results.xml
+*.vcd
+
+# Logs
+logs/
 test_logs/
-verif/logs/
-verif/sim_build/
-
-# GTKWave
-*.gtkw
-
-# Temporary / logs
 *.log
-tmp/
-build/
+results.xml
+
+# OpenLane
+openlane/
+runs/
+pdks/
 
 # OS junk
 .DS_Store

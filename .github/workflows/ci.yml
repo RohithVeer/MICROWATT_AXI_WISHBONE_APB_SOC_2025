@@ -1,0 +1,20 @@
+name: MICROWATT CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rtl-sim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+
+      - name: Run RTL simulation
+        run: |
+          cd verif
+          make SIM=icarus
