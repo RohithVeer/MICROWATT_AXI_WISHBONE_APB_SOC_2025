@@ -40,9 +40,9 @@ include $(COCOTB_MAKEFILES)/Makefile.sim
 # ----------------------------
 # Helpers
 # ----------------------------
-.PHONY: clean list
+.PHONY: local_clean list
 
-clean:
+local_clean:
 	rm -rf sim_build results.xml
 
 list:
