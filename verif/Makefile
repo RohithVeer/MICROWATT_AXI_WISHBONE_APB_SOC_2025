@@ -32,11 +32,14 @@ ifeq ($(TOPLEVEL),wb_to_apb)
 endif
 
 # ----------------------------
-# Cocotb Makefile include
+# Cocotb Makefile include (guarded for CI)
 # ----------------------------
+ifneq ($(filter clean clean_post_rtl,$(MAKECMDGOALS)),clean)
+ifneq ($(filter help,$(MAKECMDGOALS)),help)
 COCOTB_MAKEFILES := $(shell python3 -m cocotb.config --makefiles)
 include $(COCOTB_MAKEFILES)/Makefile.sim
-
+endif
+endif
 
 # ----------------------------
 # Helpers
