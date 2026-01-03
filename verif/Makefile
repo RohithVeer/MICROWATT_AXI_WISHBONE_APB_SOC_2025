@@ -1,5 +1,5 @@
 # ============================
-# Cocotb Simulation Makefile
+# Cocotb RTL Simulation Makefile
 # ============================
 
 SIM ?= icarus
@@ -13,7 +13,7 @@ ROOT_DIR  := $(VERIF_DIR)/..
 export PYTHONPATH := $(VERIF_DIR)/tb:$(PYTHONPATH)
 
 # ----------------------------
-# RTL sources (by TOPLEVEL)
+# RTL sources
 # ----------------------------
 ifeq ($(TOPLEVEL),soc_top)
 VERILOG_SOURCES := \
@@ -32,7 +32,13 @@ VERILOG_SOURCES := \
 endif
 
 # ----------------------------
-# Default targets that NEVER require cocotb
+# Cocotb include (CORRECT)
+# ----------------------------
+COCOTB_MAKEFILES := $(shell cocotb-config --makefiles)
+include $(COCOTB_MAKEFILES)/Makefile.sim
+
+# ----------------------------
+# Helpers
 # ----------------------------
 .PHONY: clean list
 
@@ -40,21 +46,5 @@ clean:
 	rm -rf sim_build results.xml
 
 list:
-	@echo "Available test python files (verif/tb):"
 	@ls -1 $(VERIF_DIR)/tb/test_*.py 2>/dev/null || true
-
-# ----------------------------
-# Simulation target (CI SAFE)
-# ----------------------------
-.PHONY: sim
-
-sim:
-	@echo "Running RTL cocotb simulation"
-	@python3 -m cocotb.config --makefiles >/dev/null
-	$(MAKE) -f $(shell python3 -m cocotb.config --makefiles)/Makefile.sim \
-		SIM=$(SIM) \
-		TOPLEVEL_LANG=$(TOPLEVEL_LANG) \
-		TOPLEVEL=$(TOPLEVEL) \
-		MODULE=$(MODULE) \
-		VERILOG_SOURCES="$(VERILOG_SOURCES)"
 

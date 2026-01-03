@@ -1,11 +1,11 @@
-name: MICROWATT CI
+name: MICROWATT CI (RTL Cocotb)
 
 on:
   push:
   pull_request:
 
 jobs:
-  rtl-sim:
+  rtl-smoke:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,8 @@ jobs:
 
       - name: Install cocotb
         run: |
-          pip3 install --upgrade pip
-          pip3 install cocotb
+          python3 -m pip install --upgrade pip
+          python3 -m pip install cocotb
 
       - name: Verify cocotb installation
         run: |
@@ -32,11 +32,9 @@ jobs:
       - name: Run RTL smoke test
         working-directory: verif
         env:
-          SIM: icarus
           TOPLEVEL: soc_top
           MODULE: test_soc_smoke_extended
         run: |
+          make clean
           make sim
 
-          cd verif
-          make SIM=icarus
