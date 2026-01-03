@@ -34,7 +34,9 @@ endif
 # ----------------------------
 # Cocotb Makefile include
 # ----------------------------
-include $(shell cocotb-config --makefiles)/Makefile.sim
+COCOTB_MAKEFILES := $(shell python3 -m cocotb.config --makefiles)
+include $(COCOTB_MAKEFILES)/Makefile.sim
+
 
 # ----------------------------
 # Helpers

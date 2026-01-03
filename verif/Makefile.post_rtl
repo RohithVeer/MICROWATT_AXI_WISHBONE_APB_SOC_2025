@@ -37,5 +37,7 @@ PLUSARGS += +GL_SIM
 # ----------------------------
 export COCOTB_RESULTS_FILE = results_post_rtl.xml
 
-include $(shell cocotb-config --makefiles)/Makefile.sim
+COCOTB_MAKEFILES := $(shell python3 -m cocotb.config --makefiles)
+include $(COCOTB_MAKEFILES)/Makefile.sim
+
 
