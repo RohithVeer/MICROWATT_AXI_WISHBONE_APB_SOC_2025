@@ -5,57 +5,56 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 TOPLEVEL ?= soc_top
-COCOTB_TEST_MODULES ?= test_apb
+MODULE ?= test_soc_smoke_extended
 
 VERIF_DIR := $(CURDIR)
 ROOT_DIR  := $(VERIF_DIR)/..
 
 export PYTHONPATH := $(VERIF_DIR)/tb:$(PYTHONPATH)
+
 # ----------------------------
 # RTL sources (by TOPLEVEL)
 # ----------------------------
-
 ifeq ($(TOPLEVEL),soc_top)
-  VERILOG_SOURCES := \
-    $(VERIF_DIR)/sram_blackbox.v \
-    $(ROOT_DIR)/rtl/axi/axi_lite_to_wishbone.sv \
-    $(ROOT_DIR)/rtl/wishbone/wb_to_apb.sv \
-    $(ROOT_DIR)/rtl/wishbone/wishbone_interconnect.sv \
-    $(ROOT_DIR)/rtl/sram/sram_wrapper.v \
-    $(ROOT_DIR)/rtl/top/vcd_force.v \
-    $(ROOT_DIR)/rtl/top/soc_top.sv
+VERILOG_SOURCES := \
+  $(VERIF_DIR)/sram_blackbox.v \
+  $(ROOT_DIR)/rtl/axi/axi_lite_to_wishbone.sv \
+  $(ROOT_DIR)/rtl/wishbone/wb_to_apb.sv \
+  $(ROOT_DIR)/rtl/wishbone/wishbone_interconnect.sv \
+  $(ROOT_DIR)/rtl/sram/sram_wrapper.v \
+  $(ROOT_DIR)/rtl/top/vcd_force.v \
+  $(ROOT_DIR)/rtl/top/soc_top.sv
 endif
 
 ifeq ($(TOPLEVEL),wb_to_apb)
-  VERILOG_SOURCES := \
-    $(ROOT_DIR)/rtl/wishbone/wb_to_apb.sv
+VERILOG_SOURCES := \
+  $(ROOT_DIR)/rtl/wishbone/wb_to_apb.sv
 endif
 
 # ----------------------------
-# Cocotb Makefile include (guarded for CI)
+# Default targets that NEVER require cocotb
 # ----------------------------
-ifneq ($(filter clean clean_post_rtl,$(MAKECMDGOALS)),clean)
-ifneq ($(filter help,$(MAKECMDGOALS)),help)
-COCOTB_MAKEFILES := $(shell python3 -m cocotb.config --makefiles)
-include $(COCOTB_MAKEFILES)/Makefile.sim
-endif
-endif
+.PHONY: clean list
 
-# ----------------------------
-# Helpers
-# ----------------------------
-.PHONY: list
+clean:
+	rm -rf sim_build results.xml
+
 list:
 	@echo "Available test python files (verif/tb):"
 	@ls -1 $(VERIF_DIR)/tb/test_*.py 2>/dev/null || true
-# ----------------------------
-# Post-RTL (Gate-level) sim
-# ----------------------------
-.PHONY: post_rtl clean_post_rtl
 
-post_rtl:
-	$(MAKE) -f Makefile.post_rtl sim
+# ----------------------------
+# Simulation target (CI SAFE)
+# ----------------------------
+.PHONY: sim
 
-clean_post_rtl:
-	$(MAKE) -f Makefile.post_rtl clean
+sim:
+	@echo "Running RTL cocotb simulation"
+	@python3 -m cocotb.config --makefiles >/dev/null
+	$(MAKE) -f $(shell python3 -m cocotb.config --makefiles)/Makefile.sim \
+		SIM=$(SIM) \
+		TOPLEVEL_LANG=$(TOPLEVEL_LANG) \
+		TOPLEVEL=$(TOPLEVEL) \
+		MODULE=$(MODULE) \
+		VERILOG_SOURCES="$(VERILOG_SOURCES)"
 

@@ -4,18 +4,18 @@
 
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
+TOPLEVEL ?= soc_top
+MODULE ?= test_soc_smoke_extended
 
-TOPLEVEL = soc_top
-MODULE   = test_soc_smoke_extended
+export PYTHONPATH := $(CURDIR)/tb:$(PYTHONPATH)
 
 # ----------------------------
 # Gate-level netlist
 # ----------------------------
-VERILOG_SOURCES = \
+VERILOG_SOURCES := \
   $(PWD)/../post_rtl/pdk/sky130_fd_sc_hd.v \
   $(PWD)/../post_rtl/sky130_sram_blackbox.v \
   $(PWD)/../post_rtl/soc_top.synth.v
-
 
 # ----------------------------
 # Icarus-safe compile options
@@ -27,24 +27,27 @@ COMPILE_ARGS += \
   -gno-specify \
   -g2012
 
-# ----------------------------
-# Runtime options
-# ----------------------------
 PLUSARGS += +GL_SIM
 
-# ----------------------------
-# Results file
-# ----------------------------
 export COCOTB_RESULTS_FILE = results_post_rtl.xml
 
 # ----------------------------
-# Cocotb Makefile include (guarded for CI)
+# Safe targets
 # ----------------------------
-ifneq ($(filter clean clean_post_rtl,$(MAKECMDGOALS)),clean)
-ifneq ($(filter help,$(MAKECMDGOALS)),help)
-COCOTB_MAKEFILES := $(shell python3 -m cocotb.config --makefiles)
-include $(COCOTB_MAKEFILES)/Makefile.sim
-endif
-endif
+.PHONY: clean sim
 
+clean:
+	rm -rf sim_build results_post_rtl.xml
+
+sim:
+	@echo "Running post-RTL cocotb simulation"
+	@python3 -m cocotb.config --makefiles >/dev/null
+	$(MAKE) -f $(shell python3 -m cocotb.config --makefiles)/Makefile.sim \
+		SIM=$(SIM) \
+		TOPLEVEL_LANG=$(TOPLEVEL_LANG) \
+		TOPLEVEL=$(TOPLEVEL) \
+		MODULE=$(MODULE) \
+		VERILOG_SOURCES="$(VERILOG_SOURCES)" \
+		COMPILE_ARGS="$(COMPILE_ARGS)" \
+		PLUSARGS="$(PLUSARGS)"
 
