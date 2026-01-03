@@ -1,92 +1,235 @@
-Microwatt POWER ISA SoC with AXI–Wishbone–APB Interconnect
-RTL → GDS Open-Source Silicon Project (SKY130 / OpenLane)
+# Microwatt-Based AXI–Wishbone–APB SoC
+RTL to GDSII Implementation using OpenLane (Sky130)
 
 
-Project Overview
-This project implements a Microwatt POWER ISA–based System-on-Chip (SoC) featuring a multi-bus interconnect architecture and a configurable peripheral subsystem. The design is fully verified at RTL and synthesized to silicon using the SkyWater SKY130 PDK and OpenLane.
+## 1. Project Summary
 
-Key Features
-- Microwatt POWER ISA CPU core
-- AXI → Wishbone → APB hierarchical bus architecture
-- 64 KiB on-chip SRAM (Sky130 macros)
-- UART, SPI, I²C, GPIO, PWM, Timer, Debug peripherals
-- Deterministic Cocotb verification with CI support
-- RTL → GDS flow using OpenLane
-- Post-PnR verification (STA, DRC, LVS)
+This repository contains a complete end-to-end ASIC implementation of a
+Microwatt-based System-on-Chip (SoC), covering the full flow from RTL design
+and verification to final GDSII tapeout using open-source EDA tools.
 
-System Architecture
-CPU (AXI4/AXI4-Lite)
-System Interconnect (Wishbone B4)
-Peripheral Bus (APB3)
-Memory (Sky130 SRAM)
-Infrastructure (Clock, Reset, JTAG)
+The design integrates multiple on-chip bus protocols, SRAM, and peripherals,
+and is functionally verified using Cocotb prior to physical implementation.
 
-Verification
-Cocotb-based RTL verification
-17 automated tests
-CI-enabled deterministic simulation
+Target Process: SkyWater SKY130
 
-Toolchain
-RTL Simulation: Icarus Verilog
-Verification: Cocotb
-RTL → GDS: OpenLane, OpenROAD, Magic, Netgen
-PDK: SkyWater SKY130A
+### Chip Layout
+<img width="1207" height="799" alt="Chip Layout" src="https://github.com/user-attachments/assets/a5f2d097-0d9c-4644-ba1e-d69fa300699f" />
 
-Directory Structure
-rtl/
-verif/
-post_rtl/
-scripts/
-docs/
 
-How to Run
-cd verif
-make SIM=icarus
-## Tapeout Artifacts and Signoff
 
-This repository includes a curated, tapeout-ready set of physical design artifacts generated using the OpenLane open-source ASIC flow on the SkyWater SKY130 PDK.
+## 2. System Description
 
-### Included Artifacts
-- **Final GDS**: `physical/gds/soc_top.gds`
-- **Merged LEF** (standard cells + macros): `physical/lef/merged.nom.lef`
-- **Final routed DEF**: `physical/def/soc_top.def`
-- **Post-synthesis netlist**: `physical/netlist/soc_top.synth.v`
-- **Static Timing Analysis (STA)**:
-  - Max / Min timing
-  - Skew analysis
-  - Timing checks
-  - Power report
-- **DRC signoff report**
-- **Die and core area reports**
-- **OpenLane configuration files**
+This SoC integrates the Microwatt POWER ISA CPU with a multi-bus interconnect
+and a configurable peripheral subsystem. The design is synthesized using the
+SkyWater SKY130 PDK and OpenLane on the ChipFoundry OpenFrame platform.
 
-All intermediate OpenLane run directories, logs, and PDK files are intentionally excluded to keep the repository clean, reviewable, and reproducible.
+All RTL is verified using Cocotb with Wishbone, AXI, and APB protocol extensions
+and includes an SRAM subsystem built from Sky130 SRAM macros.
 
-The presence of GDS, LEF, DEF, STA, and DRC artifacts confirms full RTL → GDS closure and tapeout-level readiness.
-## Physical Design Summary (Sky130)
 
-| Metric | Value | Source |
-|------|------|------|
-| Technology | SkyWater SKY130A | OpenLane |
-| Flow | OpenLane / OpenROAD | — |
-| Die Area | See `3-initial_fp_die_area.rpt` | Floorplan report |
-| Core Area | See `3-initial_fp_core_area.rpt` | Floorplan report |
-| Timing Closure | Met | STA summary |
-| DRC | Clean | `drc.rpt` |
-| LVS | Clean | OpenLane signoff |
-| Netlist | Post-synthesis | `soc_top.synth.v` |
+## 3. Architecture Overview
 
-Project Status
-RTL complete
-Verification complete
-CI stable
-OpenLane synthesis complete
-DRC/LVS clean
+Major Functional Blocks:
+- Microwatt CPU core (AXI-Lite interface)
+- AXI-Lite to Wishbone bridge
+- Wishbone interconnect
+- Wishbone to APB bridge
+- APB peripheral subsystem
+- SRAM subsystem
 
-License
-Microwatt, SkyWater SKY130, OpenLane
+Supported Bus Protocols:
+- AXI-Lite
+- Wishbone
+- APB
 
-Acknowledgements
-Microwatt community
-SkyWater PDK team
-OpenLane contributors
+### Block Diagram
+<img width="750" height="998" alt="Block Diagram" src="https://github.com/user-attachments/assets/8df03eae-206d-4cae-b7d3-ef2e9ff4df56" />
+
+### Functional Overview
+<img width="1704" height="1061" alt="Functional Overview" src="https://github.com/user-attachments/assets/c3f3a6cd-6296-4b37-b472-583bb51a4ed8" />
+
+
+## 4. System Overview
+
+| S. No | Layer         | Protocol           | Function                                      |
+|------:|---------------|--------------------|-----------------------------------------------|
+| 1     | CPU           | AXI4 / AXI4-Lite   | Microwatt instruction and data access         |
+| 2     | System        | Wishbone B4        | Interconnect between memory and peripherals  |
+| 3     | Peripheral    | APB3               | Register-mapped low-speed bus                |
+| 4     | External      | UART, SPI, I²C, GPIO | Communication interfaces                    |
+| 5     | Memory        | SRAM (Sky130 macros) | On-chip instruction and data memory         |
+| 6     | Infrastructure| Clock, Reset, JTAG | Synchronization and debug                    |
+
+
+## 5. Memory Subsystem
+
+| S. No | Component      | Type                               | Description                                   |
+|------:|----------------|------------------------------------|-----------------------------------------------|
+| 1     | SRAM Macro     | sky130_sram_1kbyte_1rw1r_32x256_8 | 1 KiB macro, 32-bit data, 256 addresses       |
+| 2     | Configuration  | 64 KiB total                       | 64 macros × 1 KiB each                        |
+| 3     | Access         | 1 RW port + 1 RO port              | Data and instruction access                  |
+| 4     | Voltage        | 1.8 V                              | Matched with digital logic                   |
+| 5     | Clock          | Single domain @ 100 MHz            | Shared system clock                           |
+| 6     | Integration    | OpenRAM macros                     | Synthesized and PnR ready                    |
+| 7     | ECC / Parity   | Not enabled                        | Reserved space available                     |
+
+## 6. Physical Specifications
+
+| S. No | Parameter        | Value                          |
+|------:|------------------|--------------------------------|
+| 1     | Technology Node | SkyWater SKY130A               |
+| 2     | Core Voltage    | 1.8 V                          |
+| 3     | Frequency       | 100 MHz                        |
+| 4     | SRAM Capacity   | 64 KiB                         |
+| 5     | Logic Area      | ~12 mm²                        |
+| 6     | Total Die Area  | 15 mm² (user region)           |
+| 7     | Utilization     | ≤ 80%                          |
+| 8     | Power           | < 50 mW (typical)              |
+| 9     | Timing Slack    | > 0 ns post-PnR                |
+| 10    | Clock Tree      | CTS optimized in OpenROAD      |
+| 11    | IO Count        | 44 ESD-protected pads          |
+
+## 7. Repository Structure
+
+├── rtl/ # Synthesizable RTL (Verilog / SystemVerilog)
+├── verif/ # Cocotb-based verification environment
+├── post_rtl/ # Post-synthesis / gate-level simulation files
+├── physical/ # Physical design outputs (GDS, DEF, LEF, reports)
+├── scripts/ # Automation and helper scripts
+└── docs/ # Project documentation
+
+## 8. Tasks Performed
+
+### RTL Design:
+- Designed top-level SoC integration
+- Implemented AXI-Lite, Wishbone, and APB interconnect logic
+- Integrated SRAM subsystem using black-box modeling
+- Ensured synthesizable and lint-clean RTL
+
+### Functional Verification:
+- Developed Cocotb-based verification environment
+- Implemented drivers, monitors, and scoreboards
+- Created directed and randomized test cases
+- Verified protocol compliance and data integrity
+
+### Pre- and Post-Synthesis Simulation:
+- Verified RTL functionality before synthesis
+- Enabled gate-level simulation using synthesized netlist
+- Validated reset behavior and functional equivalence
+
+### Physical Design (OpenLane):
+- RTL synthesis using Yosys
+- Floorplanning and die sizing
+- Power Distribution Network (PDN) generation
+- Standard-cell placement
+- Clock Tree Synthesis (CTS)
+- Global and detailed routing
+- Static Timing Analysis (STA)
+- Design Rule Check (DRC)
+- Layout Versus Schematic (LVS)
+
+
+## 9. Verification Results
+
+Passed: 17  
+Failed: 0  
+
+### RTL Verification Test Matrix
+
+| # | Test Case | Status | Focus Area |
+|---|----------|--------|------------|
+| 1 | test_apb | PASS | APB protocol |
+| 2 | test_apb_wait_states | PASS | Wait states |
+| 3 | test_axi2wb | PASS | AXI→WB bridge |
+| 4 | test_axi2wb_scoreboard | PASS | Data integrity |
+| 5 | test_coverage_hooks | PASS | Coverage |
+| 6 | test_gpio | PASS | GPIO |
+| 7 | test_i2c | PASS | I2C |
+| 8 | test_peripherals_integration | PASS | Integration |
+| 9 | test_poweron_reset | PASS | Reset |
+|10 | test_pwm | PASS | PWM |
+|11 | test_random_transaction_stress | PASS | Stress |
+|12 | test_soc_smoke | PASS | Boot |
+|13 | test_soc_smoke_extended | PASS | Stability |
+|14 | test_spi | PASS | SPI |
+|15 | test_sram | PASS | SRAM |
+|16 | test_wb_to_apb | PASS | WB→APB |
+|17 | test_wishbone_contention | PASS | Arbitration |
+
+
+## 10. Clone, Build, and Run Verification (Commands)
+
+### Clone Repository
+git clone https://github.com/RohithVeer/MICROWATT_AXI_WISHBONE_APB_SOC_2025.git
+cd <MICROWATT_AXI_WISHBONE_APB_SOC>
+
+### Install Dependencies (Ubuntu)
+sudo apt update  
+sudo apt install -y python3 python3-pip python3-venv iverilog gtkwave make git  
+
+### Python Environment
+python3 -m venv .venv  
+source .venv/bin/activate  
+pip install --upgrade pip  
+pip install cocotb cocotbext-bus cocotbext-axi cocotbext-wishbone  
+
+### Run All RTL Tests
+cd verif  
+make SIM=icarus TOPLEVEL=soc_top MODULE=test_soc  
+
+Expected Result:
+Passed: 17  
+Failed: 0  
+
+Logs:
+verif/logs/
+
+
+
+## 11. Physical Design Results
+
+Clock Period: 10 ns  
+Setup Violations: 0  
+Hold Violations: 0  
+DRC: Clean  
+LVS: Clean  
+
+## 12. Tapeout Artifacts
+
+- GDSII
+- DEF
+- LEF
+- Gate-level netlist
+- STA reports
+- OpenLane configs
+
+## 13. Toolchain
+
+| S. No | Flow Stage     | Tool             | Notes                          |
+|------:|---------------|------------------|--------------------------------|
+| 1     | Simulation    | Icarus           | Cocotb testbenches             |
+| 2     | Synthesis     | Yosys            | Uses blackbox SRAM             |
+| 3     | PnR           | OpenLane         | Fixed macro placement          |
+| 4     | DRC / LVS     | Magic + Netgen   | SKY130A verified               |
+| 5     | STA           | OpenROAD         | Macro .lib timing              |
+| 6     | Verification  | Cocotb + cocotbext | Python test framework        |
+| 7     | CI / Automation | GitHub Actions | Continuous verification        |
+
+## 14. License
+
+Apache License 2.0
+
+## 15. Acknowledgements
+
+ChipFoundry Microwatt Challenge  
+https://chipfoundry.io/challenges/microwatt  
+
+OpenPOWER Foundation  
+https://openpowerfoundation.org/
+
+## 16. Author
+
+Rohith Mudigonda
+
+
