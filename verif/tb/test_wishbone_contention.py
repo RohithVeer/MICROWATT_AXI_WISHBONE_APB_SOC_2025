@@ -12,7 +12,7 @@ async def test_wishbone_contention(dut):
 
     await ensure_reset_and_clock(dut)
 
-    cocotb.start_soon(Clock(dut.clk, 10000, unit="ps").start())
+    cocotb.start_soon(Clock(dut.clk, 10000, units="ps").start())
     dut.rst_n.value = 0
     await Timer(200, "ns")
     dut.rst_n.value = 1

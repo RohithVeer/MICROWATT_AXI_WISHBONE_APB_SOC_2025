@@ -6,9 +6,9 @@ from common import ensure_reset_and_clock
 def _start_clock_on_top(dut, period_ns=10):
     """Start a clock on the top-level clock if present (CLK_IN or clk)."""
     if hasattr(dut, "CLK_IN"):
-        cocotb.start_soon(Clock(dut.CLK_IN, period_ns, unit="ns").start())
+        cocotb.start_soon(Clock(dut.CLK_IN, period_ns, units="ns").start())
     elif hasattr(dut, "clk"):
-        cocotb.start_soon(Clock(dut.clk, period_ns, unit="ns").start())
+        cocotb.start_soon(Clock(dut.clk, period_ns, units="ns").start())
 
 @cocotb.test()
 async def test_axi2wb_smoke(dut):
@@ -31,7 +31,7 @@ async def test_axi2wb_smoke(dut):
     else:
         dut._log.warning("No top-level RESET_N/reset_n found; continuing without reset pulse")
 
-    await Timer(100, unit="ns")
+    await Timer(100, units="ns")
 
     if hasattr(dut, "RESET_N"):
         dut.RESET_N.value = 1
@@ -45,7 +45,7 @@ async def test_axi2wb_smoke(dut):
     elif hasattr(dut, "clk"):
         await RisingEdge(dut.clk)
     else:
-        await Timer(50, unit="ns")
+        await Timer(50, units="ns")
 
     # Simple poke of top-level WB/AXI-like master ports if they exist.
     # This is intentionally minimal: a single short write pulse so the bridge sees activity.
@@ -58,7 +58,7 @@ async def test_axi2wb_smoke(dut):
             dut.m0_we.value   = 1
             dut.m0_cyc.value  = 1
             dut.m0_stb.value  = 1
-            await Timer(40, unit="ns")
+            await Timer(40, units="ns")
             dut.m0_stb.value  = 0
             dut.m0_cyc.value  = 0
             dut.m0_we.value   = 0
@@ -74,7 +74,7 @@ async def test_axi2wb_smoke(dut):
                 pass
             dut.axi_awvalid.value = 1
             dut.axi_wvalid.value  = 1
-            await Timer(40, unit="ns")
+            await Timer(40, units="ns")
             dut.axi_awvalid.value = 0
             dut.axi_wvalid.value  = 0
 
@@ -82,6 +82,6 @@ async def test_axi2wb_smoke(dut):
         dut._log.warning(f"Top-level poke failed (non-fatal): {e}")
 
     # Let simulation run some more cycles so the bridge logic can process signals
-    await Timer(500, unit="ns")
+    await Timer(500, units="ns")
 
     dut._log.info("AXI2WB smoke test finished")

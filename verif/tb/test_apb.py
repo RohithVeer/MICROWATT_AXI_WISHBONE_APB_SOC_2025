@@ -5,9 +5,9 @@ from common import ensure_reset_and_clock
 
 def _maybe_start_clock(dut):
     if hasattr(dut, "CLK_IN"):
-        cocotb.start_soon(Clock(dut.CLK_IN, 10000, unit="ps").start())
+        cocotb.start_soon(Clock(dut.CLK_IN, 10000, units="ps").start())
     elif hasattr(dut, "clk"):
-        cocotb.start_soon(Clock(dut.clk, 10000, unit="ps").start())
+        cocotb.start_soon(Clock(dut.clk, 10000, units="ps").start())
 
 @cocotb.test()
 async def test_apb_peripherals(dut):

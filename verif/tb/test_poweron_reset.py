@@ -8,7 +8,7 @@ async def test_poweron_reset(dut):
 
     # ensure clock + reset are started/asserted
     await ensure_reset_and_clock(dut)
-    cocotb.start_soon(Clock(dut.clk, 10000, unit="ps").start())
+    cocotb.start_soon(Clock(dut.clk, 10000, units="ps").start())
     # assert reset long, then release
     dut.rst_n.value = 0
     await Timer(1000, "ns")

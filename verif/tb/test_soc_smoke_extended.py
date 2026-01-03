@@ -11,7 +11,7 @@ async def test_soc_smoke_extended(dut):
 
     await ensure_reset_and_clock(dut)
 
-    cocotb.start_soon(Clock(dut.clk, 10000, unit="ps").start())
+    cocotb.start_soon(Clock(dut.clk, 10000, units="ps").start())
     dut.rst_n.value = 0
     await Timer(300, "ns")
     dut.rst_n.value = 1

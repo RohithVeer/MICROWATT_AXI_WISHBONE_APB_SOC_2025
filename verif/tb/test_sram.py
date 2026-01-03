@@ -23,7 +23,7 @@ async def _maybe_start_clock(dut):
     elif hasattr(dut, "clk"):
         clk_handle = getattr(dut, "clk")
     if clk_handle is not None:
-        cocotb.start_soon(Clock(clk_handle, 10, unit="ns").start())
+        cocotb.start_soon(Clock(clk_handle, 10, units="ns").start())
         dut._log.info("Started clock on %s with 10 ns period", clk_handle._name if hasattr(clk_handle, "_name") else "clock")
     else:
         dut._log.info("No clock signal found (tried CLK_IN / clk). Continuing without starting a clock.")
