@@ -92,12 +92,12 @@ Supported Bus Protocols:
 
 ## 7. Repository Structure
 
-├── rtl/ # Synthesizable RTL (Verilog / SystemVerilog)
-├── verif/ # Cocotb-based verification environment
-├── post_rtl/ # Post-synthesis / gate-level simulation files
-├── physical/ # Physical design outputs (GDS, DEF, LEF, reports)
-├── scripts/ # Automation and helper scripts
-└── docs/ # Project documentation
+- **rtl/**        – Synthesizable RTL sources (Verilog / SystemVerilog)
+- **verif/**      – Cocotb-based functional verification
+- **post_rtl/**   – Post-synthesis / gate-level simulation artifacts
+- **physical/**   – Physical design outputs (GDS, DEF, LEF, STA, reports)
+- **scripts/**    – Automation and helper scripts
+- **docs/**       – Design and project documentation
 
 ## 8. Tasks Performed
 
