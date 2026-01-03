@@ -19,7 +19,7 @@ async def _maybe_start_clock(dut, period_ns=10):
 
     if clk_handle is not None:
         # period is in ns by default here (match tests' usage)
-        cocotb.start_soon(Clock(clk_handle, period_ns, unit="ns").start())
+        cocotb.start_soon(Clock(clk_handle, period_ns, units="ns").start())
         try:
             dut._log.info(f"Started clock on {clk_name} with {period_ns} ns period")
         except Exception:
