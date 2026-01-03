@@ -7,14 +7,36 @@ on:
 jobs:
   rtl-sim:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Icarus Verilog
-        run: sudo apt-get update && sudo apt-get install -y iverilog
-
-      - name: Run RTL simulation
+      - name: Install system dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog python3 python3-pip
+
+      - name: Install cocotb
+        run: |
+          pip3 install --upgrade pip
+          pip3 install cocotb
+
+      - name: Verify cocotb installation
+        run: |
+          python3 - << 'EOF'
+          import cocotb
+          print("cocotb version:", cocotb.__version__)
+          EOF
+
+      - name: Run RTL smoke test
+        working-directory: verif
+        env:
+          SIM: icarus
+          TOPLEVEL: soc_top
+          MODULE: test_soc_smoke_extended
+        run: |
+          make sim
+
           cd verif
           make SIM=icarus
