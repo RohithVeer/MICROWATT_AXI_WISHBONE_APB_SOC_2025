@@ -160,32 +160,75 @@ Failed: 0
 
 ## 10. Clone, Build, and Run Verification (Commands)
 
-### Clone Repository
-git clone https://github.com/RohithVeer/MICROWATT_AXI_WISHBONE_APB_SOC_2025.git
-cd <MICROWATT_AXI_WISHBONE_APB_SOC>
+This section documents the verified procedure to clone the repository and run
+RTL verification using Cocotb. The commands below are validated against the
+current repository structure and test setup.
 
-### Install Dependencies (Ubuntu)
+### 10.1 Clone Repository
+
+git clone https://github.com/RohithVeer/MICROWATT_AXI_WISHBONE_APB_SOC_2025.git  
+cd MICROWATT_AXI_WISHBONE_APB_SOC_2025  
+
+### 10.2 Install Dependencies (Ubuntu)
+
 sudo apt update  
-sudo apt install -y python3 python3-pip python3-venv iverilog gtkwave make git  
+sudo apt install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    iverilog \
+    gtkwave \
+    make \
+    git  
 
-### Python Environment
+### 10.3 Python Environment Setup
+
 python3 -m venv .venv  
 source .venv/bin/activate  
 pip install --upgrade pip  
 pip install cocotb cocotbext-bus cocotbext-axi cocotbext-wishbone  
 
-### Run All RTL Tests
+Note:
+If a Python virtual environment is not activated, Cocotb will fall back to the
+system Python interpreter. This behavior is supported and does not affect test
+execution.
+
+### 10.4 Run All RTL Verification Tests (Recommended)
+
+All RTL tests are executed using the provided automation script.
+
 cd verif  
-make SIM=icarus TOPLEVEL=soc_top MODULE=test_soc  
+./run_all_tests.sh  
+
+Expected result:
+
+Passed: 17  
+Failed: 0  
+
+### 10.5 Run an Individual Test (Optional)
+
+To run a specific Cocotb test module, invoke `make` with `MODULE` set to the
+exact Python filename (without the `.py` extension).
+
+Example:
+
+cd verif  
+make SIM=icarus TOPLEVEL=soc_top MODULE=test_soc_smoke_extended  
+
+Expected result:
+
+TESTS=1 PASS=1 FAIL=0  
+
+### 10.6 Important Notes
+
+- The Cocotb Makefile resides in the `verif/` directory  
+- `MODULE` must correspond to an existing Python test file  
+- There is no umbrella `test_soc.py` in this repository  
+- For complete verification, `run_all_tests.sh` should be used  
 
 Expected Result:
 Passed: 17  
 Failed: 0  
-
-Logs:
-verif/logs/
-
-
 
 ## 11. Physical Design Results
 
