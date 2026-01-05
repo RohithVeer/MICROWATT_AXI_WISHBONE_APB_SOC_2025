@@ -14,7 +14,8 @@ and is functionally verified using Cocotb prior to physical implementation.
 Target Process: SkyWater SKY130
 
 ### Chip Layout
-<img width="1207" height="799" alt="Chip Layout" src="https://github.com/user-attachments/assets/a5f2d097-0d9c-4644-ba1e-d69fa300699f" />
+<img width="945" height="715" alt="image" src="https://github.com/user-attachments/assets/7f158d7c-4e82-44b4-b832-bd014cc7cecf" />
+
 ## Key Features and Technical Highlights
 
 - Microwatt POWER ISA CPU integrated as the main processing core.
