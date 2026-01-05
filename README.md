@@ -15,6 +15,32 @@ Target Process: SkyWater SKY130
 
 ### Chip Layout
 <img width="1207" height="799" alt="Chip Layout" src="https://github.com/user-attachments/assets/a5f2d097-0d9c-4644-ba1e-d69fa300699f" />
+## Key Features and Technical Highlights
+
+- Microwatt POWER ISA CPU integrated as the main processing core.
+- AXI-Lite to Wishbone bridge for CPU-to-system interconnect.
+- Wishbone interconnect connecting memory and peripheral subsystems.
+- Wishbone-to-APB bridge for low-speed peripheral access.
+- On-chip 64 KiB SRAM subsystem implemented using Sky130 OpenRAM macros.
+- RTL written in Verilog/SystemVerilog, organized by protocol and function.
+
+### Verification
+- Functional verification implemented using Cocotb.
+- Directed test cases for protocol and feature validation.
+- Randomized stress tests for robustness.
+- Protocol compliance checks for AXI, Wishbone, and APB.
+- Scoreboard-based end-to-end data integrity verification.
+- Automated test execution via `run_all_tests.sh`.
+- Complete RTL verification suite with **17/17 tests passing**.
+
+### Physical Design
+- Physical implementation using OpenLane and OpenROAD.
+- Target technology: SkyWater SKY130A.
+- Clean Static Timing Analysis (STA) at 100 MHz.
+- DRC and LVS clean signoff.
+- Final tapeout artifacts (GDS, DEF, LEF, gate-level netlist, reports) included for reproducibility.
+
+- Repository structured following industry-standard ASIC project organization.
 
 
 
@@ -247,17 +273,34 @@ LVS: Clean
 - STA reports
 - OpenLane configs
 
-## 13. Toolchain
+## 13. Toolchain (RTL to GDSII) and Versions
 
-| S. No | Flow Stage     | Tool             | Notes                          |
-|------:|---------------|------------------|--------------------------------|
-| 1     | Simulation    | Icarus           | Cocotb testbenches             |
-| 2     | Synthesis     | Yosys            | Uses blackbox SRAM             |
-| 3     | PnR           | OpenLane         | Fixed macro placement          |
-| 4     | DRC / LVS     | Magic + Netgen   | SKY130A verified               |
-| 5     | STA           | OpenROAD         | Macro .lib timing              |
-| 6     | Verification  | Cocotb + cocotbext | Python test framework        |
-| 7     | CI / Automation | GitHub Actions | Continuous verification        |
+| S. No | Flow Stage            | Tool / Component        | Version / Details |
+|------:|----------------------|-------------------------|-------------------|
+| 1     | Operating System     | Ubuntu                  | 22.04.5 LTS (jammy) |
+| 2     | Kernel               | Linux                   | 6.8.0-90-generic (x86_64) |
+| 3     | RTL Simulation       | Icarus Verilog          | 11.0 (stable) |
+| 4     | Simulation Runtime   | vvp                     | 11.0 (stable) |
+| 5     | Verification         | Python                  | 3.10.12 |
+| 6     | Verification         | pip                     | 22.0.2 |
+| 7     | Verification         | Cocotb                  | 1.9.2 |
+| 8     | Verification         | cocotbext-bus           | Installed |
+| 9     | Verification         | cocotbext-axi           | Installed |
+| 10    | Verification         | cocotbext-wishbone      | Installed |
+| 11    | Synthesis            | Yosys                   | 0.9 (git sha1: 1979e0b) |
+| 12    | Place & Route        | OpenLane                | Docker-based flow |
+| 13    | Place & Route        | OpenLane Image          | ghcr.io/the-openroad-project/openlane:ff5509f65b17bfa4068d5336495ab1718987ff69 |
+| 14    | Place & Route        | OpenLane Image          | efabless/openlane:latest |
+| 15    | Static Timing        | OpenROAD                | Invoked via OpenLane Docker |
+| 16    | DRC / LVS            | Magic                   | 8.3.105 |
+| 17    | DRC / LVS            | Netgen                  | 6.2-dev |
+| 18    | Version Control      | Git                     | 2.34.1 |
+| 19    | Container Runtime    | Docker                  | 29.0.1 |
+| 20    | CI / Automation      | GitHub Actions          | Continuous verification |
+
+**Notes:**
+- OpenROAD is executed internally through the OpenLane Docker flow and is not installed as a standalone host binary.
+- The above toolchain was used to achieve clean RTL verification (17/17 tests passing) and DRC/LVS-clean GDSII at 100 MHz.
 
 ## 14. License
 
